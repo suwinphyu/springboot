@@ -16,3 +16,80 @@ Run the spring-tool-suite jar file -> Extract "sts-4.15.1.RELEASE" folder -> Run
 - Sprint Boot Devtools
 - Thymeleaf
 - Spring Web
+
+
+to monitor and manage your application.
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+Spring Security
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+ Rest Endpoints
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+create a web application
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
+writing Test cases. I
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-test</artifactId>
+</dependency>
+
+
+Spring Boot auto configures an in-memory database
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
+@EnableAutoConfiguration
+public class DemoApplication {
+   public static void main(String[] args) {
+      SpringApplication.run(DemoApplication.class, args);
+   }
+}
+
+If you added @SpringBootApplication annotation to the class, you do not need to add the @EnableAutoConfiguration, @ComponentScan and @SpringBootConfiguration annotation. The @SpringBootApplication annotation includes all other annotations.
+
+Main Method 
+This class should be annotated with @SpringBootApplication. 
+This is the entry point of the spring boot application to start.
+
+
+Write a Rest Endpoint
+@RestController - top of the class
+@RequestMapping - inside the class with path
+
+
+@SpringBootApplication
+@RestController
+
+public class DemoApplication {
+   public static void main(String[] args) {
+      SpringApplication.run(DemoApplication.class, args);
+   }
+   @RequestMapping(value = "/")
+   public String hello() {
+      return "Hello World";
+   }
+}
+
+
+Create an Executable JAR
+mvn clean install
+gradle clean build =>  build successful 
+target - jar file is created
+build/libs
+RUN jar file = java -jar <JARFILENAME>
+create a WAR file and deploy the Spring Boot application in Tomcat web server.
