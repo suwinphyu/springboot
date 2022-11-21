@@ -1,0 +1,321 @@
+<h2>Student Listing</h2>
+
+<div class="search-hero">
+    <input class="form-control" type="text" name="searchText" (keyup)="onKeyUp($event)" autocomplete="off" placeholder="Search">
+  </div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>DOB</th>
+            <th>Course</th>
+            <th>Email</th>
+            <th>Mobile Number</th>            
+            <th>Address</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor = "let student of students | paginate :{itemsPerPage : 3, currentPage: pageNo} ">
+            <td>{{student.firstName}}</td>
+            <td>{{student.lastName}}</td>
+            <td>{{student.dob | date: 'dd-MM-yyyy'}}</td>
+            <td>{{student.course}}</td>
+            <td>{{student.email}}</td>
+            <td>{{student.mobileNumber}}</td>
+            <td>{{student.address}}</td>
+            <td>{{student.status}}</td>
+            <td><button (click) = "updateStudent(student.id)" class = "btn btn-info"> Edit</button></td>
+        </tr>
+    </tbody>
+</table>
+<div class="d-flex justify-content-center">
+    <pagination-controls
+      previousLabel="Prev"
+      nextLabel="Next"
+      (pageChange)="onTableDataChange($event)"
+    >
+    </pagination-controls>
+ </div>
+
+
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { StudentService } from 'src/app/service/student.service';
+import { Student } from 'src/model/student';
+
+
+@Component({
+  selector: 'app-student-listing',
+  templateUrl: './student-listing.component.html',
+  styleUrls: ['./student-listing.component.css']
+})
+export class StudentListingComponent implements OnInit {
+  students!: Student[];
+  pageNo : any;
+  searchText : any;
+  pattern : any;
+
+  constructor(private router :Router, 
+    private studentService : StudentService
+    ) { 
+    
+  }
+
+  ngOnInit(): void {
+    this.getData();
+      }
+
+
+  getData(){
+    this.studentService.getAllStudents().subscribe(data => this.students = data);
+  }
+
+  onTableDataChange(event: any) {
+    this.pageNo = event;
+    this.getData();
+  }
+
+  updateStudent(id: number){
+    this.router.navigate(['update-student', id]);
+  }
+
+  onKeyUp(x: any){
+    if(x.target.value == ""){this.ngOnInit();}
+    else{
+      this.searchText = x.target.value;
+      if(this.searchText ){      
+        switch(this.searchText ){
+          case "email": 
+          this.pattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,4}$/);
+          if(this.pattern.test(this.searchText )){  
+            console.log("email");        
+          }
+          break;
+          case "number": 
+          this.pattern = new RegExp(/^[0-9]*$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("number"); 
+
+          }
+          break;
+          case "date": 
+          this.pattern = new RegExp(/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("date"); 
+
+          }
+          break;
+          case "string": 
+          this.pattern = new RegExp(/^[object (S+?)]$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("string"); 
+
+          }
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+
+<h1 class = "text-center">{{title}}</h1>
+
+<nav class="navbar" style="background-color: #e3f2fd;">
+  <div class="navbar-nav mr-auto " id="navbarSupportedContent">
+<ul class="navbar-nav me-auto mb-4 mb-lg-2">
+  <li class="nav-item active">
+    <a routerLink = "students" routerLinkActive = "active" class="nav-link">Student Listing</a>
+  </li>
+
+  <li class="nav-item">
+    <a routerLink = "add-student" routerLinkActive = "active" class="nav-link">Add Student</a>
+  </li>
+</ul>
+</div>
+</nav>
+
+<div class="container"><router-outlet></router-outlet></div>
+
+<div class="card">
+    <h4 class="card-header">Add Student</h4>
+    <div class="card-body">
+        <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label class="form-label" for="first-name">First Name: </label>
+                <input class="form-control" id="first-name" type="text" formControlName="firstName"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['firstName'].errors }">
+                <div *ngIf="buttonCheck && f['firstName'].errors" class="invalid-feedback">
+                    <div *ngIf="f['firstName'].errors['required']">FirstName is required</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="last-name">Last Name: </label>
+                <input class="form-control" id="last-name" type="text" formControlName="lastName"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['lastName'].errors }">
+                <div *ngIf="buttonCheck && f['lastName'].errors" class="invalid-feedback">
+                    <div *ngIf="f['lastName'].errors['required']">LastName is required</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="dob">DOB</label>
+                <input class="form-control" id="dob" type="date" formControlName="dob"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['dob'].errors }">
+                <div *ngIf="buttonCheck && f['dob'].errors" class="invalid-feedback">
+                    <div *ngIf="f['dob'].errors['required']">DOB is required</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="course">Course</label>
+                <input class="form-control" id="course" type="text" formControlName="course"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['course'].errors }">
+                <div *ngIf="buttonCheck && f['course'].errors" class="invalid-feedback">
+                    <div *ngIf="f['course'].errors['required']">Course is required</div>
+                </div>
+            </div>
+
+
+
+            <div class="mb-3">
+                <label class="form-label" for="email">Email </label>
+                <input class="form-control" id="email" type="email" formControlName="email"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['email'].errors }">
+                <div *ngIf="buttonCheck && f['email'].errors" class="invalid-feedback">
+                    <div *ngIf="f['email'].errors['required']">Email is required</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="mobileNumber">Mobile Number </label>
+                <input class="form-control" id="mobileNumber" type="text" formControlName="mobileNumber"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['mobileNumber'].errors }">
+                <div *ngIf="buttonCheck && f['mobileNumber'].errors" class="invalid-feedback">
+                    <div *ngIf="f['mobileNumber'].errors['required']">mobileNumber is required</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="address">Address </label>
+                <input class="form-control" id="address" type="text" formControlName="address"
+                    [ngClass]="{ 'is-invalid': buttonCheck && f['address'].errors }">
+                <div *ngIf="buttonCheck && f['address'].errors" class="invalid-feedback">
+                    <div *ngIf="f['address'].errors['required']">Address is required</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button class="btn btn-secondary" type="reset" (click)="onReset()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+
+import { formatDate } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { first } from 'rxjs';
+import { Student } from 'src/model/student';
+import { StudentService } from '../service/student.service';
+
+@Component({
+  selector: 'app-add-student',
+  templateUrl: './add-student.component.html',
+  styleUrls: ['./add-student.component.css']
+})
+export class AddStudentComponent implements OnInit {
+  isAdd!: boolean;
+  id!: number;
+  buttonCheck: boolean = false;
+  student!: Student;
+
+  constructor(private formBuilder: FormBuilder, private studentService: StudentService, private router: Router, private route: ActivatedRoute) { }
+  studentForm: FormGroup = new FormGroup({
+    id : new FormControl(''),
+    firstName: new FormControl(''),
+    lastName: new FormControl(''),
+    dob: new FormControl(this.formatFromDate(new Date())),
+    course: new FormControl(''),
+    email: new FormControl(''),
+    mobileNumber: new FormControl(''),
+    address: new FormControl('')
+  });
+
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+    this.isAdd = !this.id;
+
+    this.studentForm = this.formBuilder.group({      
+      id : [],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      dob: ['', Validators.required],
+      course: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      mobileNumber: ['', Validators.required],
+      address: ['', Validators.required],
+
+    });
+    if (!this.isAdd) {
+      if (this.id != null)
+      this.studentService.getById(this.id).pipe(first()).subscribe(c => this.studentForm.setValue(c));
+
+    }
+
+  }
+
+  get f() { return this.studentForm.controls; }
+
+  onSubmit() {
+    this.buttonCheck = true;
+    if(this.studentForm.invalid){
+      return;
+    }
+    if (this.isAdd) {
+      this.createStudent();
+    } else {
+      this.updateStudent();
+    }
+
+  }
+
+  onReset() {
+    this.buttonCheck = false;
+    this.studentForm?.reset();
+  }
+
+  private createStudent() {
+    this.studentService.addStudent(this.studentForm.value)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/students'])
+        },
+      });
+  }
+
+
+  private updateStudent() {
+    this.studentService.updateStudent(this.id, this.studentForm.value)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/students'])
+        },
+      });
+  }
+
+  formatFromDate(date: Date){
+    return formatDate(date,"yyyy-MM-dd","en");
+  }
+}
+
