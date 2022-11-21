@@ -319,3 +319,34 @@ export class AddStudentComponent implements OnInit {
   }
 }
 
+export class Student {
+    id: number;
+    firstName : string;
+    lastName : string;
+    dob : Date;
+    course :string;
+    email : string;
+    mobileNumber : string;
+    address: string;
+    status : string;
+
+    constructor(    id: number,
+        firstName : string,
+        lastName : string,
+        dob : Date,
+        course :string,
+        email : string,
+        mobileNumber : string,
+        address: string,
+        status : string){
+            this.id = id;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.dob = dob;
+            this.course = course;
+            this.email = email;
+            this.mobileNumber = mobileNumber;
+            this.address = address;
+            this.status = status
+        }
+}
