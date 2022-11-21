@@ -350,3 +350,25 @@ export class Student {
             this.status = status
         }
 }
+
+
+private baseURL = "http://localhost:9090/api/v1";
+  constructor(private httpClient: HttpClient) {}
+
+  getAllStudents(): Observable<Student[]>{
+      return this.httpClient.get<Student[]>(`${this.baseURL}/students`);
+    }
+
+
+  addStudent(student : Student): Observable<Student>{
+    return this.httpClient.post<Student>(`${this.baseURL}/add-student`,student);
+  }
+
+  getById(id: number): Observable<Student> {
+    return this.httpClient.get<Student>(`${this.baseURL}/student/${id}`);
+}
+
+
+updateStudent(id: number, student: Student): Observable<Object>{
+  return this.httpClient.put(`${this.baseURL}/edit-student/${id}`, student);
+}
