@@ -372,3 +372,85 @@ private baseURL = "http://localhost:9090/api/v1";
 updateStudent(id: number, student: Student): Observable<Object>{
   return this.httpClient.put(`${this.baseURL}/edit-student/${id}`, student);
 }
+
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { StudentService } from 'src/app/service/student.service';
+import { Student } from 'src/model/student';
+
+
+@Component({
+  selector: 'app-student-listing',
+  templateUrl: './student-listing.component.html',
+  styleUrls: ['./student-listing.component.css']
+})
+export class StudentListingComponent implements OnInit {
+  students!: Student[];
+  pageNo : any;
+  searchText : any;
+  pattern : any;
+
+  constructor(private router :Router, 
+    private studentService : StudentService
+    ) { 
+    
+  }
+
+  ngOnInit(): void {
+    this.getData();
+      }
+
+
+  getData(){
+    this.studentService.getAllStudents().subscribe(data => this.students = data);
+  }
+
+  onTableDataChange(event: any) {
+    this.pageNo = event;
+    this.getData();
+  }
+
+  updateStudent(id: number){
+    this.router.navigate(['update-student', id]);
+  }
+
+  onKeyUp(x: any){
+    if(x.target.value == ""){this.ngOnInit();}
+    else{
+      this.searchText = x.target.value;
+      if(this.searchText ){      
+        switch(this.searchText ){
+          case "email": 
+          this.pattern = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,4}$/);
+          if(this.pattern.test(this.searchText )){  
+            console.log("email");        
+          }
+          break;
+          case "number": 
+          this.pattern = new RegExp(/^[0-9]*$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("number"); 
+
+          }
+          break;
+          case "date": 
+          this.pattern = new RegExp(/^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("date"); 
+
+          }
+          break;
+          case "string": 
+          this.pattern = new RegExp(/^[object (S+?)]$/);
+          if(this.pattern.test(this.searchText )){
+            console.log("string"); 
+
+          }
+          break;
+        }
+      }
+    }
+  }
+
+}
